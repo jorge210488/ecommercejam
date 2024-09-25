@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   nestapp:
-    build: ./
+    image: "jorge210488/ecommercejam:latest"
     ports: 
       - "3002:3000"
     env_file:
