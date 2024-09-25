@@ -87,9 +87,6 @@ export class AuthService {
   async updateUserAdmin(id: string, isAdmin: boolean): Promise<Omit<User, 'password' | 'isAdmin'>> {
     // Obtener el usuario
     const user = await this.usersRepository.getById(id);
-    if (!user) {
-      throw new NotFoundException(`Usuario con id ${id} no encontrado`);
-    }
     const updatedUser = await this.usersRepository.updateUser(id, { isAdmin });
     return updatedUser;
   }
