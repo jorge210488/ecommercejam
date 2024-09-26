@@ -6,7 +6,7 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiParam, ApiTags } from "@nestjs/
 import { Multer } from 'multer';
 
 
-@ApiTags("Products")
+@ApiTags("Cloudinary")
 @Controller()
 export class CloudinaryController {
     constructor(private readonly cloudinaryService: CloudinaryService) {}

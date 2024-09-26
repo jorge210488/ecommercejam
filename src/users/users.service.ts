@@ -7,7 +7,7 @@ import { CreateUserDto, UpdateUserDto } from "./CreateUser.dto";
 export class UsersService {
     constructor(private usersRepository: UsersRepository){}
 
-    async getUsers(page: number = 1, limit: number = 5): Promise<{
+    async getUsers(page: number, limit: number): Promise<{
         page:number;
         limit: number;
         users: Omit<User, 'password' | 'isAdmin'>[];

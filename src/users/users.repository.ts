@@ -1,7 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './Users.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersRepository {
@@ -11,9 +12,10 @@ export class UsersRepository {
 
   // private users: User[] = getInitialUsers(); 
 
-  async getUsers(page: number = 1, limit: number = 5): Promise<{
+  async getUsers(page: number, limit: number): Promise<{
     page: number;
     limit: number;
+    // total: number; 
     users: Omit<User, 'password' | 'isAdmin'>[];
   }> {
     const skip = (page - 1) * limit; 
@@ -30,6 +32,7 @@ export class UsersRepository {
       return {
         page,
         limit,
+        // total,
         users: usersWithoutPassword,
       };
     } catch (error) {
@@ -37,13 +40,11 @@ export class UsersRepository {
     }
   }
   
-  async getById(id: string): Promise<any> {
+  async getById(id: string): Promise<Omit<User, 'password' | 'isAdmin'>> {
     try {
       const user = await this.usersRepository.findOne({
         where: { id },
-        relations: {orders: {
-          orderDetail: true
-        }},
+        relations: ["orders"]
       });
   
       if (!user) {
@@ -51,11 +52,6 @@ export class UsersRepository {
       }
   
       const { password, isAdmin, orders, ...rest } = user; 
-  
-      const userOrders = orders.map(order => ({
-        id: order.id,
-        date: order.date,
-      }));
   
       return {
         ...rest,
@@ -86,16 +82,23 @@ async updateUser(id: string, updateData: Partial<User>): Promise<Omit<User, 'pas
     if (!user) {
       throw new NotFoundException(`Usuario con id ${id} no encontrado`);
     }
+    if (updateData.password) {
+      const hashedPassword = await bcrypt.hash(updateData.password, 10);
+      updateData.password = hashedPassword; 
+    }
     const updatedUser = Object.assign(user, updateData);
     const savedUser = await this.usersRepository.save(updatedUser);
-
     const { password, isAdmin, ...result } = savedUser;
     
     return result;
   } catch (error) {
+    if (error.code === '23505') { // Código de error de PostgreSQL para valores duplicados
+      throw new ConflictException('El email ya está en uso');
+    }
     throw error;
   }
 }
+
 
 async deleteUser(id: string): Promise<User> {
   try {
