@@ -76,4 +76,4 @@ export class AuthService {
     const updatedUser = await this.usersRepository.updateUser(id, { isAdmin });
     return updatedUser;
   }
-} 
+}  
