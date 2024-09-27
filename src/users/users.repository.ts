@@ -41,14 +41,14 @@ export class UsersRepository {
     }
   }
   
-  async getById(id: string): Promise<Omit<User, 'password' | 'isAdmin'>> {
+  async getById(id: string): Promise<Omit<User, 'password'>> {
     try {
       const user = await this.usersRepository.findOne({
         where: { id },
         relations: ["orders"]
       });
       validateUserExists(user, id)
-      const { password, isAdmin, orders, ...rest } = user; 
+      const { password, orders, ...rest } = user; 
   
       return {
         ...rest,
@@ -92,16 +92,17 @@ async updateUser(id: string, updateData: Partial<User>): Promise<Omit<User, 'pas
   }
 }
 
-async deleteUser(id: string): Promise<User> {
+async deleteUser(id: string): Promise<string> {
   try {
     const user = await this.usersRepository.findOne({ where: { id } });
-    validateUserExists(user, id)
+    validateUserExists(user, id); 
     await this.usersRepository.remove(user);
-    return user;
+    return `Usuario con el id ${id} eliminado correctamente`; 
   } catch (error) {
     throw error;
   }
 }
+
 
 async findEmail(email: string): Promise<User | undefined> {
   try {

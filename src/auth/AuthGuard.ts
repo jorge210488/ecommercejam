@@ -51,6 +51,11 @@ export class AuthGuard implements CanActivate {
             const userIdFromToken = payload.sub || payload.id;
             // Obtener el ID del usuario objetivo desde los parámetros de la solicitud o el cuerpo 
             const userIdFromRequest = request.params.id || request.body.userId;
+
+            if (payload.roles.includes('admin')) {
+                return true;  
+            }
+            
             // Validar que el usuario solo pueda modificar sus propios datos
 	        if (userIdFromRequest && userIdFromToken !== userIdFromRequest) {
                 throw new ForbiddenException('No tienes permiso para realizar esta acción en otro usuario.');

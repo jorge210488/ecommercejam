@@ -14,7 +14,7 @@ export class User {
     @ApiProperty({
         description: 'Nombre completo del usuario. Este campo es obligatorio.',
         example: 'Jorge Martínez',
-        maxLength: 50
+        maxLength: 50 //Hay discrepancia con lo que que dice el DTO, se deja igual por requisitos de la Homework
     })
     name: string;
 
@@ -32,7 +32,7 @@ export class User {
     @ApiProperty({
         description: 'Contraseña del usuario. Este campo es obligatorio. Se recomienda almacenar de manera segura (ej: hash).',
         example: 'hashedpassword123',
-        maxLength: 100
+        maxLength: 100 //En la homework se pedía 20, pero al password hasheado ocupa más espacios por eso se hace el ajuste
     })
     password: string;    
 
@@ -42,6 +42,14 @@ export class User {
         example: 11345543
     })
     phone: number;
+
+    @Column({ type: "varchar", length: 50 })
+    @ApiProperty({
+        description: 'País de residencia del usuario. Este campo es opcional.',
+        example: 'Argentina',
+        maxLength: 50 //Hay discrepancia con lo que que dice el DTO, se deja igual por requisitos de la Homework
+    })
+    country?: string;
 
     @Column({ type: "varchar", length: 100 })
     @ApiProperty({
@@ -53,17 +61,9 @@ export class User {
 
     @Column({ type: "varchar", length: 50 })
     @ApiProperty({
-        description: 'País de residencia del usuario. Este campo es opcional.',
-        example: 'Argentina',
-        maxLength: 50
-    })
-    country?: string;
-
-    @Column({ type: "varchar", length: 50 })
-    @ApiProperty({
         description: 'Ciudad de residencia del usuario. Este campo es opcional.',
         example: 'Buenos Aires',
-        maxLength: 50
+        maxLength: 50 //Hay discrepancia con lo que que dice el DTO, se deja igual por requisitos de la Homework
     })
     city?: string;
 

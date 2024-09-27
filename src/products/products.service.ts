@@ -85,7 +85,7 @@ export class ProductsService {
         return this.productsRepository.updateProduct(id, updateData);
     }
 
-    async deleteProduct(id:string): Promise<Product> {
+    async deleteProduct(id:string): Promise<string> {
         return this.productsRepository.deleteProduct(id);
     }
 }

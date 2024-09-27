@@ -75,14 +75,14 @@ async createProduct(product: Product): Promise<Product> {
     }
   }
   
-  async deleteProduct(id: string): Promise<Product> {
+  async deleteProduct(id: string): Promise<string> {
     try {
       const product = await this.productsRepository.findOne({ where: { id } });
       validateProductExists(product, id);
       await this.productsRepository.remove(product);
-      return product;
+      return `Producto con el id ${id} ha sido eliminado exitosamente`; 
     } catch (error) {
       throw error;
     }
-  }
+  }  
 }
