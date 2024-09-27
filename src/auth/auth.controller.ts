@@ -7,7 +7,7 @@ import { RolesGuard } from "./RolesGuard";
 import { Role } from "./role.enum";
 import { Roles } from "../decorators/roles.decorator";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { EmailLowercaseInterceptor } from "src/interceptors/emailLowercase.interceptor";
+import { EmailLowercaseInterceptor } from "../interceptors/emailLowercase.interceptor";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -16,6 +16,7 @@ export class AuthController {
 
     @HttpCode(200)
     @Get()
+    @UseGuards(AuthGuard)
     async getAuth() {
         return await this.authService.getAuth(); 
     } 

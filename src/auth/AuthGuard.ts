@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext, BadRequestException, UnauthorizedException } from "@nestjs/common";
+import { Injectable, CanActivate, ExecutionContext, BadRequestException, UnauthorizedException, ForbiddenException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
 import { Observable } from "rxjs";
@@ -47,6 +47,14 @@ export class AuthGuard implements CanActivate {
             payload.exp = new Date(payload.exp * 1000);
             request.user = payload;
             console.log({payload});
+            // Obtener el ID del usuario logueado desde el token JWT
+            const userIdFromToken = payload.sub || payload.id;
+            // Obtener el ID del usuario objetivo desde los parámetros de la solicitud o el cuerpo 
+            const userIdFromRequest = request.params.id || request.body.userId;
+            // Validar que el usuario solo pueda modificar sus propios datos
+	        if (userIdFromRequest && userIdFromToken !== userIdFromRequest) {
+                throw new ForbiddenException('No tienes permiso para realizar esta acción en otro usuario.');
+            }
             return true;
         } catch (error){
             throw new UnauthorizedException("Token Invalido");

@@ -1,7 +1,8 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { UsersRepository } from "./users.repository";
 import { User } from "./Users.entity";
-import { CreateUserDto, UpdateUserDto } from "./CreateUser.dto";
+import { UpdateUserDto } from "./CreateUser.dto";
+import { validateRequestBodyNotEmpty } from "../helpers/validation.helper";
 
 @Injectable()
 export class UsersService {
@@ -33,9 +34,7 @@ export class UsersService {
       // }
     
     async updateUser(id: string, updateData: UpdateUserDto): Promise<Omit<User, 'password' | 'isAdmin'>> {
-      if (Object.keys(updateData).length === 0) {
-        throw new BadRequestException('Datos de actualización son requeridos');
-      }
+      validateRequestBodyNotEmpty(updateData);
           return await this.usersRepository.updateUser(id, updateData);
       }      
 

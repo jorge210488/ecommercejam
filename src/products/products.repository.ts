@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { Product } from './Products.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { validateProductExists } from '../helpers/validation.helper';
 
 @Injectable()
 export class ProductsRepository {
@@ -38,9 +39,7 @@ export class ProductsRepository {
 async getById(id: string): Promise<Product | undefined> {
   try {
     const product = await this.productsRepository.findOne({ where: { id } });
-    if (!product) {
-      throw new NotFoundException(`Producto con id ${id} no encontrado`);
-    }
+    validateProductExists(product, id);
     return product;
   } catch (error) {
     throw error;
@@ -66,9 +65,7 @@ async createProduct(product: Product): Promise<Product> {
   async updateProduct(id: string, updateData: Partial<Product>): Promise<Product> {
     try {
       const product = await this.productsRepository.findOne({ where: { id } });
-      if (!product) {
-        throw new NotFoundException(`Producto con id ${id} no encontrado`);
-      }
+      validateProductExists(product, id);
       const updatedProduct = { ...product, ...updateData };
       await this.productsRepository.save(updatedProduct);
   
@@ -78,18 +75,14 @@ async createProduct(product: Product): Promise<Product> {
     }
   }
   
-
   async deleteProduct(id: string): Promise<Product> {
     try {
       const product = await this.productsRepository.findOne({ where: { id } });
-      if (!product) {
-        throw new NotFoundException(`Producto con el id ${id} no encontrado`);
-      }
+      validateProductExists(product, id);
       await this.productsRepository.remove(product);
       return product;
     } catch (error) {
       throw error;
     }
   }
-  
 }

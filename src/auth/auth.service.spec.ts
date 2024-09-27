@@ -71,13 +71,4 @@ describe("authService", () => {
         const errors = await validate(invalidUser); 
         expect(errors.length).toBeGreaterThan(0); 
     });
-
-    // it("Si el email ya existe, debería lanzar una excepción", async () => {
-    //     mockUsersService.findEmail = () => 
-    //         Promise.resolve({
-    //             ...mockUser,
-    //             id: "un-id-cualquiera",
-    //         });
-    //     await expect(authService.signup(mockUser)).rejects.toThrowError("Email ya existe");
-    // });
 });

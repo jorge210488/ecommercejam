@@ -1,5 +1,5 @@
 import { Controller, Param, Get, HttpCode, Post, Body, ParseUUIDPipe, UseGuards } from "@nestjs/common";
-import { OrderResponse, OrdersService } from "./orders.service";
+import { OrdersService } from "./orders.service";
 import { CreateOrderDto} from "./CreateOrder.dto";
 import { AuthGuard } from "../auth/AuthGuard";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
@@ -21,7 +21,7 @@ export class OrdersController {
     @UseGuards(AuthGuard)
     @HttpCode(201)
         @Post()
-    async addOrder(@Body() orderData: CreateOrderDto): Promise<OrderResponse> {
+    async addOrder(@Body() orderData: CreateOrderDto) {
           return this.ordersService.addOrder(orderData);
         }
 }

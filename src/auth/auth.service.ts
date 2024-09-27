@@ -6,19 +6,9 @@ import { User } from "../users/Users.entity";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { Role } from "./role.enum";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-
-interface SigninResponse {
-  message: string;
-  user: {
-    id: string;
-    email: string;
-    name: string;
-  };
-  token: string;
-}
-
+import { SigninResponse } from '../interfaces/signin-response.interface';
+import { validateEmailExists } from "../helpers/validation.helper";
+import { hashPassword } from "../helpers/password.helper";
 
 @Injectable()
 export class AuthService {
@@ -32,13 +22,10 @@ export class AuthService {
 
     async signup(userData: CreateUserDto): Promise<Omit<User, "password">> {
       const userEmail = await this.usersRepository.findEmail(userData.email);
-    if (userEmail){
-    throw new BadRequestException("Email ya existe");
-    }
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
-    if(!hashedPassword){
-    throw new BadRequestException("Password no pudo ser hashed")
-    }
+      
+      validateEmailExists(userEmail);
+      const hashedPassword = await hashPassword(userData.password);
+
       const user = new User();
       user.name = userData.name;
       user.email = userData.email;
@@ -51,7 +38,7 @@ export class AuthService {
       return await this.usersRepository.createUser({...user, password:hashedPassword}); 
     }
 
-    async signin(loginUserDto: LoginUserDto): Promise<{ message: string; user: Partial<User>; token: string }> {
+    async signin(loginUserDto: LoginUserDto): Promise<SigninResponse> {
       const { email, password } = loginUserDto;
       const user = await this.usersRepository.findEmail(email);
   
@@ -85,7 +72,6 @@ export class AuthService {
   }
 
   async updateUserAdmin(id: string, isAdmin: boolean): Promise<Omit<User, 'password' | 'isAdmin'>> {
-    // Obtener el usuario
     const user = await this.usersRepository.getById(id);
     const updatedUser = await this.usersRepository.updateUser(id, { isAdmin });
     return updatedUser;

@@ -6,13 +6,7 @@ import { UsersRepository } from "../users/users.repository";
 import { OrderDetail } from "./OrderDetails.entity";
 import { OrderDetailsRepository } from "./orderDetails.repository";
 import { CreateOrderDto } from "./CreateOrder.dto";
-import { Product } from "../products/Products.entity";
-
-export interface OrderResponse extends Partial<Order> {
-  totalPrice: number;
-  products: Pick<Product, 'id' | 'name' | 'price'>[];
-}
-
+import { OrderResponse } from "../interfaces/order-response.interface";
 
 @Injectable()
 export class OrdersService {

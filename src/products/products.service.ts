@@ -4,6 +4,7 @@ import { CategoriesRepository } from "../categories/categories.repository";
 import { CategoriesService } from "../categories/categories.service";
 import { Product } from "./Products.entity";
 import { CreateProductDto, UpdateProductDto } from "./CreateProduct.dto";
+import { validateCategoryExists, validateRequestBodyNotEmpty } from "../helpers/validation.helper";
 
 @Injectable()
 export class ProductsService {
@@ -31,9 +32,7 @@ export class ProductsService {
         const category = await this.categoriesRepository.getCategories()
         .then(categories => categories.find(cat => cat.id === productData.categoryId));
         
-        if (!category) {
-            throw new NotFoundException(`Categoría con id ${productData.categoryId} no encontrada`);
-        }
+        validateCategoryExists(category, productData.categoryId);
 
         const product = new Product();
         product.name = productData.name;
@@ -65,9 +64,7 @@ export class ProductsService {
       
           try {
             const category = categories.find(cat => cat.name === productData.category);      
-            if (!category) {
-              throw new NotFoundException(`Categoría con nombre '${productData.category}' no encontrada.`);
-            }
+            validateCategoryExists(category, productData.category);
             product.category = category;
             await this.productsRepository.createProduct(product);
             console.log(`Producto '${product.name}' cargado exitosamente`);
@@ -84,9 +81,7 @@ export class ProductsService {
       }
       
     async updateProduct(id: string, updateData: UpdateProductDto): Promise<Product> {
-      if (!Object.keys(updateData).length) {
-        throw new BadRequestException('El cuerpo de la solicitud no puede estar vacío');
-      }
+      validateRequestBodyNotEmpty(updateData);
         return this.productsRepository.updateProduct(id, updateData);
     }
 

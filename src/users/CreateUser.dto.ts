@@ -85,14 +85,7 @@ export class CreateUserDto {
 export class UpdateUserDto extends PartialType(CreateUserDto) {
     @ApiProperty({
       description: 'Ejemplo de datos de actualización del usuario',
-      example: {
-        name: 'Jorge García',
-        email: 'jorgemartinez@email.com',
-        phone: 11655455,
-        address: 'Av. Córboba 1245',
-        country: 'Argentina',
-        city: 'Santa Fe',
-      }
+      example: 'Av Franklin 125',
     })
-    example?: any;
-  }
+    address?: string;
+}

@@ -1,8 +1,9 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './Users.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
+import { validateEmailExists, validateUserExists } from '../helpers/validation.helper';
+import { hashPassword } from '../helpers/password.helper';
 
 @Injectable()
 export class UsersRepository {
@@ -46,11 +47,7 @@ export class UsersRepository {
         where: { id },
         relations: ["orders"]
       });
-  
-      if (!user) {
-        throw new NotFoundException(`Usuario con id ${id} no encontrado`);
-      }
-  
+      validateUserExists(user, id)
       const { password, isAdmin, orders, ...rest } = user; 
   
       return {
@@ -65,9 +62,7 @@ export class UsersRepository {
 async createUser(user: User): Promise<Omit<User, "password">> {
   try {
     const checkEmail = await this.usersRepository.findOne({ where: { email: user.email } });
-    if (checkEmail) {
-      throw new BadRequestException(`El email ${user.email} ya está en uso`);
-    }
+    validateEmailExists(checkEmail)
     const newUser = await this.usersRepository.save(user);
     const {isAdmin, password, ...result } = newUser;
     return result;
@@ -76,15 +71,13 @@ async createUser(user: User): Promise<Omit<User, "password">> {
   }
 }
 
+
 async updateUser(id: string, updateData: Partial<User>): Promise<Omit<User, 'password' | 'isAdmin'>> {
   try {
     const user = await this.usersRepository.findOne({ where: { id } });
-    if (!user) {
-      throw new NotFoundException(`Usuario con id ${id} no encontrado`);
-    }
+      validateUserExists(user, id)
     if (updateData.password) {
-      const hashedPassword = await bcrypt.hash(updateData.password, 10);
-      updateData.password = hashedPassword; 
+      updateData.password = await hashPassword(updateData.password);
     }
     const updatedUser = Object.assign(user, updateData);
     const savedUser = await this.usersRepository.save(updatedUser);
@@ -99,13 +92,10 @@ async updateUser(id: string, updateData: Partial<User>): Promise<Omit<User, 'pas
   }
 }
 
-
 async deleteUser(id: string): Promise<User> {
   try {
     const user = await this.usersRepository.findOne({ where: { id } });
-    if (!user) {
-      throw new NotFoundException(`Usuario con id ${id} no encontrado`);
-    }
+    validateUserExists(user, id)
     await this.usersRepository.remove(user);
     return user;
   } catch (error) {
