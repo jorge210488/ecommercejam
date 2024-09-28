@@ -18,26 +18,29 @@ export class CategoriesService {
         return this.categoriesRepository.addCategories(category);
     }
 
-    async preloadCategories(): Promise<void> {
+    async preloadCategories(): Promise<{ category: string, status: string }[]> {
       const productsData: { category:string}[] = require('../assets/products.json');
       const categoriesData = productsData.map(item => item.category);
       const uniqueCategories = Array.from(new Set(categoriesData));
+
+      const result: { category: string, status: string }[] = [];
     
       for (const categoryName of uniqueCategories) {
         const category = new Category();
         category.name = categoryName;
         try {
           await this.categoriesRepository.addCategories(category);
-          console.log(`Categoria '${category.name}' cargada exitosamente`);
+          result.push({ category: category.name, status: 'Cargada exitosamente' });
         } catch (error) {
           if (error instanceof BadRequestException) {
-            console.log(error.message);
+            result.push({ category: categoryName, status: error.message });
           } else {
             console.error(`Error al intentar cargar la categoría '${categoryName}':`, error);
             throw error;
           }
         }
       }
+      return result;
     }
       
     async getCategories(): Promise<Category[]> {

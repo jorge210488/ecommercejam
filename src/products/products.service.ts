@@ -52,9 +52,12 @@ export class ProductsService {
         await this.preloadProducts();
       }
 
-    async preloadProducts(): Promise<void> {
+    async preloadProducts(): Promise<{ product: string, status: string }[]> {
       const productsData: { name: string; description: string; price: number; stock: number; category: string; }[] = require('../assets/products.json');
         const categories = await this.categoriesRepository.getCategories();
+
+        const result: { product: string, status: string }[] = [];
+
         for (const productData of productsData) {
           const product = new Product();
           product.name = productData.name;
@@ -67,17 +70,17 @@ export class ProductsService {
             validateCategoryExists(category, productData.category);
             product.category = category;
             await this.productsRepository.createProduct(product);
-            console.log(`Producto '${product.name}' cargado exitosamente`);
-      
+            result.push({ product: product.name, status: 'Cargado exitosamente' });
           } catch (error) {
             if (error instanceof BadRequestException) {
-              console.log(error.message);
+              result.push({ product: productData.name, status: error.message });
             } else {
               console.error(`Error al intentar cargar el producto '${productData.name}':`, error);
               throw error; 
             }
           }
         }
+        return result;
       }
       
     async updateProduct(id: string, updateData: UpdateProductDto): Promise<Product> {
