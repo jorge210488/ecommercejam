@@ -56,8 +56,15 @@ export class AuthService {
         sub:user.id,
         id:user.id,
         email:user.email,
-        roles: [user.isAdmin ? Role.Admin : Role.User],
+        roles: [],
       }
+
+      if (user.isAdmin) {
+        userPayload.roles = [Role.Admin];
+      } else {
+        userPayload.roles = [Role.User]
+      }
+
       const token = this.jwtService.sign(userPayload);
   
       return {
@@ -73,7 +80,7 @@ export class AuthService {
 
   async updateUserAdmin(id: string, isAdmin: boolean): Promise<Omit<User, 'password' | 'isAdmin'>> {
     const user = await this.usersRepository.getById(id);
-    const updatedUser = await this.usersRepository.updateUser(id, { isAdmin });
+    const updatedUser = await this.usersRepository.updateUser(id, { isAdmin: true});
     return updatedUser;
   }
 }  

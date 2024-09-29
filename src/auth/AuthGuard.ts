@@ -52,7 +52,7 @@ export class AuthGuard implements CanActivate {
             // Obtener el ID del usuario objetivo desde los parámetros de la solicitud o el cuerpo 
             const userIdFromRequest = request.params.id || request.body.userId;
 
-            if (payload.roles.includes('admin')) {
+            if (payload.roles.includes(Role.Admin)) {
                 return true;  
             }
             
