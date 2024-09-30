@@ -85,6 +85,12 @@ export class ProductsService {
       
     async updateProduct(id: string, updateData: UpdateProductDto): Promise<Product> {
       validateRequestBodyNotEmpty(updateData);
+
+      if (updateData.categoryId) {
+        const categories = await this.categoriesRepository.getCategories();
+        const category = categories.find(category => category.id === updateData.categoryId);
+        validateCategoryExists(category, updateData.categoryId);
+      }
         return this.productsRepository.updateProduct(id, updateData);
     }
 

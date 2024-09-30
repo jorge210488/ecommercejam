@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { Product } from './Products.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { validateProductExists } from '../helpers/validation.helper';
+import { validateProductExists, validateProductNameExists } from '../helpers/validation.helper';
 
 @Injectable()
 export class ProductsRepository {
@@ -51,10 +51,7 @@ async createProduct(product: Product): Promise<Product> {
     const existingProduct = await this.productsRepository.findOne({
       where: { name: product.name },
     });
-
-    if (existingProduct) {
-      throw new BadRequestException(`El producto con el nombre '${product.name}' ya existe.`);
-    }
+    validateProductNameExists(existingProduct, product.name);
     const newProduct = await this.productsRepository.save(product);
     return newProduct;
   } catch (error) {
@@ -66,6 +63,13 @@ async createProduct(product: Product): Promise<Product> {
     try {
       const product = await this.productsRepository.findOne({ where: { id } });
       validateProductExists(product, id);
+      if (updateData.name) {
+        const existingProduct = await this.productsRepository.findOne({ where: { name: updateData.name } });
+        if (existingProduct && existingProduct.id !== id) {
+          validateProductNameExists(existingProduct, updateData.name);
+        }
+      }
+
       const updatedProduct = { ...product, ...updateData };
       await this.productsRepository.save(updatedProduct);
   

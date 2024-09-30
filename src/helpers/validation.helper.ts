@@ -14,6 +14,13 @@ export function validateProductExists(product: any, id: string): void {
   }
 }
 
+// Validación para el nombre del producto
+export function validateProductNameExists(existingProduct: any, name: string): void {
+  if (existingProduct) {
+    throw new BadRequestException(`El producto con el nombre '${name}' ya existe.`);
+  }
+}
+
 // Validación para la categoría
 export function validateCategoryExists(category: any, identifier: string): void {
     if (!category) {

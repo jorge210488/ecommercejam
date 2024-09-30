@@ -43,7 +43,7 @@ export class User {
     })
     phone: number;
 
-    @Column({ type: "varchar", length: 50 })
+    @Column({ type: "varchar", length: 50, nullable: true })
     @ApiProperty({
         description: 'País de residencia del usuario. Este campo es opcional.',
         example: 'Argentina',
@@ -51,21 +51,21 @@ export class User {
     })
     country?: string;
 
-    @Column({ type: "varchar", length: 100 })
-    @ApiProperty({
-        description: 'Dirección del usuario. Puede incluir información como calle, número, etc. Este campo es opcional.',
-        example: 'Av. Corrientes 1234',
-        maxLength: 100
-    })
-    address?: string;    
-
-    @Column({ type: "varchar", length: 50 })
+    @Column({ type: "varchar", length: 50, nullable: true  })
     @ApiProperty({
         description: 'Ciudad de residencia del usuario. Este campo es opcional.',
         example: 'Buenos Aires',
         maxLength: 50 //Hay discrepancia con lo que que dice el DTO, se deja igual por requisitos de la Homework
     })
     city?: string;
+
+    @Column({ type: "varchar", length: 100, nullable: true })
+    @ApiProperty({
+        description: 'Dirección del usuario. Puede incluir información como calle, número, etc. Este campo es opcional.',
+        example: 'Av. Corrientes 1234',
+        maxLength: 100
+    })
+    address?: string;    
 
     @Column({ default: false })
     @ApiProperty({
