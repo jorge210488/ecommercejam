@@ -6,11 +6,11 @@ import {
     ForbiddenException,
   } from '@nestjs/common';
   import { Observable } from 'rxjs';
-  import { OrdersRepository } from '../orders/orders.repository'; // Asegúrate de importar tu OrdersRepository
+  import { OrdersRepository } from '../orders/orders.repository'; 
   
   @Injectable()
   export class OrderPermissionInterceptor implements NestInterceptor {
-    constructor(private readonly ordersRepository: OrdersRepository) {}  // Inyectar el repositorio de órdenes
+    constructor(private readonly ordersRepository: OrdersRepository) {}  
   
     async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
       const request = context.switchToHttp().getRequest();
