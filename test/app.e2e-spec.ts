@@ -4,6 +4,8 @@ import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { AuthGuard } from '../src/auth/AuthGuard';
 import { RolesGuard } from '../src/auth/RolesGuard';
+import { UserPermissionInterceptor } from '../src/interceptors/userPermission.interceptor';
+import { OrderPermissionInterceptor } from '../src/interceptors/orderPermission.interceptor';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -19,7 +21,16 @@ describe('AppController (e2e)', () => {
     .overrideGuard(RolesGuard)
     .useValue({
       canActivate: () => true, // Simulamos que el RolesGuard permite el acceso
-    }).compile();
+    })
+    .overrideInterceptor(UserPermissionInterceptor) 
+      .useValue({
+        intercept: (context, next) => next.handle(), // Simula el comportamiento del interceptor permitiendo todas las solicitudes
+      })
+      .overrideInterceptor(OrderPermissionInterceptor) 
+      .useValue({
+        intercept: (context, next) => next.handle(),
+      })
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
@@ -35,7 +46,7 @@ describe('AppController (e2e)', () => {
   });
 
     it("Get /users/:id regresa un objeto con un usuario con un status 200 de ok", async () => {
-      const req = await request(app.getHttpServer()).get("/users/feb3a09f-d8f8-4d41-ac77-d3f48f65c633"); // un id de un usuario registrado anteriormente
+      const req = await request(app.getHttpServer()).get("/users/b6c09c9d-ed1c-47ca-b479-43167285ab33"); // un id de un usuario registrado anteriormente
       expect(req.status).toBe(200);
       expect(req.body).toBeInstanceOf(Object);
     });
@@ -65,7 +76,7 @@ describe('AppController (e2e)', () => {
   });
 
   it("Get /products/:id regresa un objeto con un producto con un status 200 de ok", async () => {
-    const req = await request(app.getHttpServer()).get("/products/2a36b8a2-fba5-469d-90ce-b98c3d9b5630"); // un id de un producto registrado anteriormente
+    const req = await request(app.getHttpServer()).get("/products/0ea74b65-34ee-439e-bd31-fde7cf68428a"); // un id de un producto registrado anteriormente
     expect(req.status).toBe(200);
     expect(req.body).toBeInstanceOf(Object);
   });
@@ -87,7 +98,7 @@ describe('AppController (e2e)', () => {
 
   it("Post /products arroja un error BadRequestException si el producto ya existe", 
     async () => {
-      const product = { name: "Iphone 15", price: 999, description: "Nuevo Iphone 15", stock: 10, categoryId: "84e8f918-df87-4073-83d7-7cd8ebe17c8d"}; // un id de una categoria registrada anteriormente
+      const product = { name: "Iphone 15", price: 999, description: "Nuevo Iphone 15", stock: 10, categoryId: "d08d47d6-de5c-4ad9-bcb9-9aa39d78c12e"}; // un id de una categoria registrada anteriormente
       const req = await request(app.getHttpServer()).post("/products").send(product); 
       expect(req.status).toBe(400); 
       expect(req.body.message).toBe(`El producto con el nombre '${product.name}' ya existe.`);
@@ -95,7 +106,7 @@ describe('AppController (e2e)', () => {
   
 
   it("Get /orders/:id regresa un objeto con una orden con un status 200 de ok", async () => {
-    const req = await request(app.getHttpServer()).get("/orders/a36518f2-f133-41ad-958b-9f11387f7f98"); // un id de una orden registrada anteriormente
+    const req = await request(app.getHttpServer()).get("/orders/cd68ac1f-0445-4ba5-91b7-7e6fd945b340"); // un id de una orden registrada anteriormente
     expect(req.status).toBe(200);
     expect(req.body).toBeInstanceOf(Object);
   });
