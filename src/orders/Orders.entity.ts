@@ -13,13 +13,13 @@ export class Order {
     @ApiProperty({ description: 'Se genera automatico con la Fecha en que se generó la orden', example: '2023-09-15T08:00:00Z' })
     date: Date;
 
-    @ManyToOne(() => User, user => user.orders, { nullable: false })
+    @ManyToOne(() => User, user => user.orders, { nullable: false, onDelete: 'CASCADE' })
     @ApiProperty({
         description: 'Usuario que realizó la orden. Referencia a la entidad de usuario, pero omite el campo de password.',
         type: () => User
     })
-    user: Omit<User, 'password'>; 
-
+    user: Omit<User, 'password'>;
+    
     @OneToOne(() => OrderDetail, orderDetail => orderDetail.order, { cascade: true })
     @JoinColumn()
     @ApiProperty({

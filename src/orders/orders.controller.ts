@@ -1,8 +1,9 @@
-import { Controller, Param, Get, HttpCode, Post, Body, ParseUUIDPipe, UseGuards } from "@nestjs/common";
+import { Controller, Param, Get, HttpCode, Post, Body, ParseUUIDPipe, UseGuards, UseInterceptors } from "@nestjs/common";
 import { OrdersService } from "./orders.service";
 import { CreateOrderDto} from "./CreateOrder.dto";
 import { AuthGuard } from "../auth/AuthGuard";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { OrderPermissionInterceptor } from "../interceptors/orderPermission.interceptor";
 
 @ApiTags("Orders")
 @Controller("orders")
@@ -11,6 +12,7 @@ export class OrdersController {
 
     @ApiBearerAuth()
     @UseGuards(AuthGuard)
+    @UseInterceptors(OrderPermissionInterceptor)
     @HttpCode(200)
     @Get(":id")
     async getOrderById(@Param("id", new ParseUUIDPipe()) id: string) {
@@ -19,6 +21,7 @@ export class OrdersController {
 
     @ApiBearerAuth()
     @UseGuards(AuthGuard)
+    @UseInterceptors(OrderPermissionInterceptor)
     @HttpCode(201)
         @Post()
     async addOrder(@Body() orderData: CreateOrderDto) {

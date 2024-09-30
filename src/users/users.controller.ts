@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, HttpCode, Param, Body, UseGuards, Query, Req, Request, BadRequestException, NotFoundException, ParseUUIDPipe, ParseIntPipe, DefaultValuePipe } from "@nestjs/common";
+import { Controller, Get, Post, Put, Delete, HttpCode, Param, Body, UseGuards, Query, Req, Request, BadRequestException, NotFoundException, ParseUUIDPipe, ParseIntPipe, DefaultValuePipe, UseInterceptors } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { User } from "./Users.entity";
 import { AuthGuard } from "../auth/AuthGuard";
@@ -7,6 +7,7 @@ import { Roles } from "../decorators/roles.decorator";
 import { Role } from "../auth/role.enum";
 import { RolesGuard } from "../auth/RolesGuard";
 import { ApiBearerAuth, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { UserPermissionInterceptor } from "../interceptors/userPermission.interceptor";
 
 @ApiTags("Users")
 @Controller("users")
@@ -33,6 +34,7 @@ import { ApiBearerAuth, ApiQuery, ApiTags } from "@nestjs/swagger";
     
       @ApiBearerAuth()
       @UseGuards(AuthGuard)
+      @UseInterceptors(UserPermissionInterceptor)
       @HttpCode(200)
       @Get(':id')
       async getUserById(@Param('id', new ParseUUIDPipe()) id: string) {
@@ -48,6 +50,7 @@ import { ApiBearerAuth, ApiQuery, ApiTags } from "@nestjs/swagger";
         
         @ApiBearerAuth()
         @UseGuards(AuthGuard)
+        @UseInterceptors(UserPermissionInterceptor)        
         @HttpCode(200)
         @Put(':id')
         async updateUser(
@@ -58,6 +61,7 @@ import { ApiBearerAuth, ApiQuery, ApiTags } from "@nestjs/swagger";
     
         @ApiBearerAuth()
         @UseGuards(AuthGuard)
+        @UseInterceptors(UserPermissionInterceptor)
         @HttpCode(200)
         @Delete(':id')
         async deleteUser(@Param('id', new ParseUUIDPipe()) id: string) {

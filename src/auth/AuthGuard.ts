@@ -28,41 +28,35 @@ import { Role } from "./role.enum";
 
 @Injectable() 
 export class AuthGuard implements CanActivate {
-    constructor(
-        private readonly jwtService: JwtService
-    ){}
-   
-   async canActivate(
-        context: ExecutionContext
-    ): Promise<boolean> {
+    constructor(private readonly jwtService: JwtService) {}
+
+    async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
         const token = request.headers["authorization"]?.split(" ")[1] ?? "";
-        if(!token){
+
+        if (!token) {
             throw new UnauthorizedException("Bearer token no encontrado");
         }
-        try{
+
+        try {
             const secret = process.env.JWT_SECRET;
-            const payload = this.jwtService.verify(token, { secret});
+            const payload = this.jwtService.verify(token, { secret });
             payload.iat = new Date(payload.iat * 1000);
             payload.exp = new Date(payload.exp * 1000);
-            request.user = payload;
-            console.log({payload});
-            // Obtener el ID del usuario logueado desde el token JWT
-            const userIdFromToken = payload.sub || payload.id;
-            // Obtener el ID del usuario objetivo desde los parámetros de la solicitud o el cuerpo 
-            const userIdFromRequest = request.params.id || request.body.userId;
 
-            if (payload.roles.includes(Role.Admin)) {
-                return true;  
-            }
-            
-            // Validar que el usuario solo pueda modificar sus propios datos
-	        if (userIdFromRequest && userIdFromToken !== userIdFromRequest) {
-                throw new ForbiddenException('No tienes permiso para realizar esta acción en otro usuario.');
-            }
+            // Asignar el payload al request.user
+            request.user = payload;
+            console.log({ payload });
+
             return true;
-        } catch (error){
-            throw new UnauthorizedException("Token Invalido");
+        } catch (error) {
+            if (error.name === 'JsonWebTokenError') {
+                throw new UnauthorizedException("Token inválido");
+            } else if (error.name === 'TokenExpiredError') {
+                throw new UnauthorizedException("Token ha expirado");
+            } else {
+                throw error;
+            }
         }
     }
 }
