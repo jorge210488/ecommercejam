@@ -4,7 +4,7 @@ import { CategoriesRepository } from "../categories/categories.repository";
 import { CategoriesService } from "../categories/categories.service";
 import { Product } from "./Products.entity";
 import { CreateProductDto, UpdateProductDto } from "./CreateProduct.dto";
-import { validateCategoryExists, validateRequestBodyNotEmpty } from "../helpers/validation.helper";
+import { validateRequestBodyNotEmpty } from "../helpers/validation.helper";
 
 @Injectable()
 export class ProductsService {
@@ -29,10 +29,7 @@ export class ProductsService {
     
     
     async createProduct(productData: CreateProductDto): Promise<Product> {
-        const category = await this.categoriesRepository.getCategories()
-        .then(categories => categories.find(cat => cat.id === productData.categoryId));
-        
-        validateCategoryExists(category, productData.categoryId);
+      const category = await this.categoriesRepository.getCategoryById(productData.categoryId);
 
         const product = new Product();
         product.name = productData.name;
@@ -54,8 +51,6 @@ export class ProductsService {
 
     async preloadProducts(): Promise<{ product: string, status: string }[]> {
       const productsData: { name: string; description: string; price: number; stock: number; category: string; }[] = require('../assets/products.json');
-        const categories = await this.categoriesRepository.getCategories();
-
         const result: { product: string, status: string }[] = [];
 
         for (const productData of productsData) {
@@ -66,8 +61,7 @@ export class ProductsService {
           product.stock = productData.stock;
       
           try {
-            const category = categories.find(cat => cat.name === productData.category);      
-            validateCategoryExists(category, productData.category);
+            const category = await this.categoriesRepository.getCategoryByName(productData.category);
             product.category = category;
             await this.productsRepository.createProduct(product);
             result.push({ product: product.name, status: 'Cargado exitosamente' });
@@ -85,15 +79,12 @@ export class ProductsService {
       
     async updateProduct(id: string, updateData: UpdateProductDto): Promise<Product> {
       validateRequestBodyNotEmpty(updateData);
-
       if (updateData.categoryId) {
-        const categories = await this.categoriesRepository.getCategories();
-        const category = categories.find(category => category.id === updateData.categoryId);
-        validateCategoryExists(category, updateData.categoryId);
+        const category = await this.categoriesRepository.getCategoryById(updateData.categoryId);
       }
         return this.productsRepository.updateProduct(id, updateData);
     }
-
+    
     async deleteProduct(id:string): Promise<string> {
         return this.productsRepository.deleteProduct(id);
     }

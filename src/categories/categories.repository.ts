@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Category } from "../categories/Categories.entity";
 import { Repository } from "typeorm";
+import { validateCategoryExists } from "../helpers/validation.helper";
 
 
 @Injectable()
@@ -33,5 +34,25 @@ export class CategoriesRepository {
         } catch (error) {
             throw error;
         }
+    }
+
+    async getCategoryById(id: string): Promise<Category> {
+      try {
+        const category = await this.categoriesRepository.findOne({ where: { id } });
+        validateCategoryExists(category, id);
+        return category;
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    async getCategoryByName(name: string): Promise<Category> {
+      try {
+        const category = await this.categoriesRepository.findOne({ where: { name } });
+        validateCategoryExists(category, name);
+        return category;
+      } catch (error) {
+        throw error;
+      }
     }
 }
