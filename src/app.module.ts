@@ -13,7 +13,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 @Module({
-  imports: [UsersModule, ProductsModule, AuthModule, CategoriesModule, OrdersModule, CloudinaryModule, 
+  imports: [AuthModule, CategoriesModule, CloudinaryModule, OrdersModule, ProductsModule, UsersModule, 
     ConfigModule.forRoot({
       isGlobal:true,
       load: [typeOrmConfig],
