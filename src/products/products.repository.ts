@@ -36,6 +36,19 @@ export class ProductsRepository {
     }
   }
 
+  async getByName(name: string): Promise<Product> {
+    try {
+      const product = await this.productsRepository.findOne({ where: { name } });
+      if (!product) {
+        throw new BadRequestException(`El producto con el nombre '${name}' no existe.`);
+      }
+      return product;
+    } catch (error) {
+      throw error;
+    }
+  }
+  
+
 async getById(id: string): Promise<Product | undefined> {
   try {
     const product = await this.productsRepository.findOne({ where: { id } });

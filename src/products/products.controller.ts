@@ -23,6 +23,13 @@ export class ProductsController {
            ){
             return this.productsService.getProducts(page, limit);
         }
+        
+        @HttpCode(200)
+        @Get("name")
+        async getProductName(@Query("name") name: string) {
+            return this.productsService.getProductByName(name);
+        }
+
 
         @HttpCode(200)
         @Get(":id")

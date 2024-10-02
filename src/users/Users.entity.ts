@@ -82,3 +82,21 @@ export class User {
     })
     orders?: Order[]; 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/

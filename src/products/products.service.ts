@@ -22,6 +22,10 @@ export class ProductsService {
     }>{
         return this.productsRepository.getProducts(page, limit);
     }
+
+    async getProductByName(name: string) {
+      return this.productsRepository.getByName(name);
+  }
     
     async getProductById(id: string) {
         return this.productsRepository.getById(id);
