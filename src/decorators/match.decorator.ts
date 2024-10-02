@@ -20,6 +20,6 @@ export class MatchPassword implements ValidatorConstraintInterface {
     return true;
   }
   defaultMessage(args?: ValidationArguments): string {
-    return 'La Clave y la clave de confirmación deben coincidir';
+    return 'El password y confirmationPassword deben coincidir';
   }
 }

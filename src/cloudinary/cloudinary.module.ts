@@ -4,7 +4,6 @@ import { CloudinaryService } from "./cloudinary.service";
 import { CloudinaryRepository } from "./cloudinary.repository";
 import { CloudinaryController } from "./cloudinary.controller";
 import { Product } from "../products/Products.entity";
-import { ProductsModule } from "../products/products.module";
 import { CloudinaryConfig } from "../config/cloudinary";
 
 
