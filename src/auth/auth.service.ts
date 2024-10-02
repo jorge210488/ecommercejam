@@ -16,10 +16,6 @@ export class AuthService {
       private readonly jwtService: JwtService,
     ) {}
 
-    async getAuth(){
-        return "Get Auth";
-    }
-
     async signup(userData: CreateUserDto): Promise<Omit<User, "password">> {
       const userEmail = await this.usersRepository.findEmail(userData.email);
       

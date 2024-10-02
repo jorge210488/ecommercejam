@@ -14,13 +14,6 @@ import { EmailLowercaseInterceptor } from "../interceptors/emailLowercase.interc
 export class AuthController {
     constructor (private readonly authService: AuthService){}
 
-    @HttpCode(200)
-    @Get()
-    @UseGuards(AuthGuard)
-    async getAuth() {
-        return await this.authService.getAuth(); 
-    } 
-
     @HttpCode(201)
     @Post('signup')
     @UseInterceptors(EmailLowercaseInterceptor)

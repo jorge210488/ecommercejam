@@ -18,7 +18,7 @@ export class OrderDetail {
     })
     price: number;
 
-    @OneToOne(() => Order, order => order.orderDetail, { nullable: false })
+    @OneToOne(() => Order, order => order.orderDetail, { nullable: false, onDelete: 'CASCADE' })
     @JoinColumn({ name: "order_id" })
     @ApiProperty({
         description: 'Orden asociada a este detalle de orden. Relación uno a uno con la entidad Order.',
