@@ -15,13 +15,6 @@ This is the backend for an individual ecommerce project developed during the Hen
 
 This backend was designed to offer a comprehensive ecommerce solution, handling product, user, and order management with ease.
 
-## Technologies Used
-
-- **Backend**: TypeScript, NestJS, TypeORM
-- **API Documentation**: Swagger
-- **Authentication**: Auth0
-- **Deployment**: Docker
-
 ---
 
 Thank you for checking out my project! 😊
